@@ -67,9 +67,7 @@ def select_keypts_by_response(keypts, top_n):
 def distance_based_matching(kx1, ky1, kx2, ky2, tform, radius=5.0):
     nn_idx, nn_dist = cppext.distance_based_matching(kx1, ky1, kx2, ky2, tform)
 
-    match_i = np.logical_and(nn_dist < radius * radius, nn_idx >= 0).nonzero()[
-        0
-    ]
+    match_i = np.logical_and(nn_dist < radius * radius, nn_idx >= 0).nonzero()[0]
     match_j = nn_idx[match_i]
 
     return match_i, match_j
@@ -88,12 +86,8 @@ def prepare_image(im_path, im_rotation):
 
 
 def eval_repeatability(keypts_i, keypts_j, mask_i, mask_j, H, top_n):
-    keypts_i = keypts_i[
-        find_points_in_mask(keypts_i[:, 0], keypts_i[:, 1], mask_i), :
-    ]
-    keypts_j = keypts_j[
-        find_points_in_mask(keypts_j[:, 0], keypts_j[:, 1], mask_j), :
-    ]
+    keypts_i = keypts_i[find_points_in_mask(keypts_i[:, 0], keypts_i[:, 1], mask_i), :]
+    keypts_j = keypts_j[find_points_in_mask(keypts_j[:, 0], keypts_j[:, 1], mask_j), :]
     if not keypts_i.shape[0] or not keypts_j.shape[0]:
         return 0, -1
 
@@ -166,9 +160,7 @@ class KeypointDetector(object):
     def __call__(self, image, use_maxima, output_score_map=False):
         # reflect pad to ameliorate boundary effect
         _, _, _, pad = self.model.get_output_size(-1, -1)
-        im_ = cv2.copyMakeBorder(
-            image, pad, pad, pad, pad, cv2.BORDER_REFLECT_101
-        )
+        im_ = cv2.copyMakeBorder(image, pad, pad, pad, pad, cv2.BORDER_REFLECT_101)
 
         if len(im_.shape) < 3:
             im_ = np.expand_dims(im_, 2)
@@ -234,9 +226,7 @@ class RepeatabilityEvalDataset(object):
             self.rotation[idx, :],
             os.path.join(self.root, self.image_list[idx + self.n_pairs]),
             self.rotation[idx + self.n_pairs, :],
-            self.load_homography(
-                os.path.join(self.root, self.homography_list[idx])
-            ),
+            self.load_homography(os.path.join(self.root, self.homography_list[idx])),
         )
 
     def get_num_pairs(self):

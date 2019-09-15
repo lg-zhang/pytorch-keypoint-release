@@ -6,9 +6,7 @@ import math
 
 def conv2d_relu(iplanes, oplanes, ksize):
     return [
-        nn.Conv2d(
-            in_channels=iplanes, out_channels=oplanes, kernel_size=ksize
-        ),
+        nn.Conv2d(in_channels=iplanes, out_channels=oplanes, kernel_size=ksize),
         nn.ReLU(True),
     ]
 
@@ -28,9 +26,7 @@ def make_fcn_nopool65():
     # fc-1
     layers += conv2d_relu(32, 32, 1)
     # fc-2
-    layers += [
-        nn.Conv2d(in_channels=32, out_channels=1, kernel_size=1, padding=0)
-    ]
+    layers += [nn.Conv2d(in_channels=32, out_channels=1, kernel_size=1, padding=0)]
 
     return nn.Sequential(*layers)
 
@@ -82,7 +78,7 @@ class LossFunction(nn.Module):
         score_extrema = sorted_score[:, 0]
         _, idx = score_extrema.sort(descending=self._optimize_maxima)
 
-        sorted_score = sorted_score[idx[0:int(len(idx) * 0.75)].data, :]
+        sorted_score = sorted_score[idx[0 : int(len(idx) * 0.75)].data, :]
         num = min(sorted_score.size()[1], self._topk)
         aac = (
             torch.abs(

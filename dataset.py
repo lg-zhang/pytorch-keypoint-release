@@ -17,7 +17,7 @@ class PatchDataset(Dataset):
 
         self._A = data["a"]
         self._B = data["b"]
-        
+
         h, w = self._A.shape[2], self._A.shape[3]
         if patch_size is not None:
             xc = w // 2

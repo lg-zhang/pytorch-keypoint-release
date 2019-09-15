@@ -40,12 +40,7 @@ def non_extrema_suppression_multi_scale(score_pyramid, choose_maxima=True):
     choose_maxima = 1 if choose_maxima else -1
 
     ext_dll.NonExtremaSuppressionMultiScale(
-        score_ptr,
-        c_int(c),
-        c_int(w),
-        c_int(h),
-        result_ptr,
-        c_int(choose_maxima),
+        score_ptr, c_int(c), c_int(w), c_int(h), result_ptr, c_int(choose_maxima)
     )
 
     syx = result.nonzero()
@@ -64,9 +59,7 @@ def compute_subpix_quadratic(score, x_, y_):
     x_ptr = x.ctypes.data_as(POINTER(c_float))
     y_ptr = y.ctypes.data_as(POINTER(c_float))
 
-    ext_dll.CalcSubpixel(
-        score_ptr, c_int(w), c_int(h), c_int(x.size), x_ptr, y_ptr
-    )
+    ext_dll.CalcSubpixel(score_ptr, c_int(w), c_int(h), c_int(x.size), x_ptr, y_ptr)
 
     good = np.logical_and(
         np.logical_and(x >= 0, x <= w - 1), np.logical_and(y >= 0, y <= h - 1)

@@ -50,13 +50,12 @@ def main(args):
     if finetuning:
         rep_max, rep_min = eval_model(model, eval_dset)
         criterion = LossFunction(
-            optimize_maxima=rep_max > rep_min,
-            peakedness_weight=args.peakedness_weight,
+            optimize_maxima=rep_max > rep_min, peakedness_weight=args.peakedness_weight
         )
-        model_p = "pretrained.pth"
+        model_p = "tuned.pth"
     else:
         criterion = LossFunction()
-        model_p = "tuned.pth"
+        model_p = "pretrained.pth"
 
     criterion = criterion.cuda()
 
@@ -67,7 +66,7 @@ def main(args):
     train_dset = PatchDataset(args.train_data, 71 if finetuning else 65)
     train_loader = DataLoader(
         train_dset,
-        batch_size=args.bs * 2, # double to form quadruple
+        batch_size=args.bs * 2,  # double to form quadruple
         shuffle=True,
         num_workers=4,
         drop_last=True,
@@ -92,7 +91,9 @@ def main(args):
             loss = criterion(model(pa1), model(pa2), model(pb1), model(pb2))
 
             if step % args.log_interval == 0:
-                logger.info(f"Epoch {epoch_idx} [{batch_idx}/{len(train_loader)}]: loss = {loss.item():.4f}")
+                logger.info(
+                    f"Epoch {epoch_idx} [{batch_idx}/{len(train_loader)}]: loss = {loss.item():.4f}"
+                )
 
             loss.backward()
 
