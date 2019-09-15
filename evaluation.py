@@ -142,9 +142,6 @@ class KeypointDetector(object):
         return kx, ky, response
 
     def run_fcn(self, im_):
-        h = im_.shape[2]
-        w = im_.shape[3]
-
         data = torch.from_numpy(im_).float().cuda()
         result = self.model(data).cpu().data.numpy()[0, ...]
 
@@ -254,8 +251,8 @@ def evaluate_repeatability_on_dataset(dataset, key_det, top_n, use_maxima):
     for idx in range(dataset.get_num_pairs()):
         im_i_path, im_i_rot, im_j_path, im_j_rot, H = dataset.get_image_pair(idx)
 
-        im_i, im_i_mask = prepare_image(im_i_path, im_i_rot)
-        im_j, im_j_mask = prepare_image(im_j_path, im_j_rot)
+        _, im_i_mask = prepare_image(im_i_path, im_i_rot)
+        _, im_j_mask = prepare_image(im_j_path, im_j_rot)
 
         keypts_i = keypts_list[idx]
         keypts_j = keypts_list[idx + dataset.get_num_pairs()]

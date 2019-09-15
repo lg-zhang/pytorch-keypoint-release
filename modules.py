@@ -78,8 +78,8 @@ class LossFunction(nn.Module):
         score_extrema = sorted_score[:, 0]
         _, idx = score_extrema.sort(descending=self._optimize_maxima)
 
-        sorted_score = sorted_score[idx[0 : int(len(idx) * 0.75)].data, :]
-        num = min(sorted_score.size()[1], self._topk)
+        sorted_score = sorted_score[idx[:int(len(idx) * 0.75)].data, :]
+        num = min(sorted_score.size(1), self._topk)
         aac = (
             torch.abs(
                 sorted_score[:, 0].contiguous().view(-1, 1).repeat(1, num)
@@ -87,10 +87,10 @@ class LossFunction(nn.Module):
             )
         ).mean(dim=1)
 
-        return (self._peakedness_margin - aac).clamp(0)
+        return (self._peakedness_margin - aac).clamp(0).mean()
 
     def forward(self, sa1, sa2, sb1, sb2):
-        c = sa1.size(1) // 2  # only use the center
+        c = sa1.size(1) // 2  # only use the center for ranking
         diff_a = sa1[:, c] - sa2[:, c]
         diff_b = sb1[:, c] - sb2[:, c]
         diff_prod = diff_a * diff_b

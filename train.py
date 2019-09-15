@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 def eval_model(model, eval_dset):
+    logger.info("evaluating repeatability...")
     model.eval()
     key_det = KeypointDetector(model)
     _, _, rep_max = evaluate_repeatability_on_dataset(
@@ -42,15 +43,18 @@ def main(args):
     # set up network
     model = KeypointNet()
     if args.pretrained is not None:
-        model.load_state_dict(torch.load(model))
+        model.load_state_dict(torch.load(args.pretrained))
     model = torch.nn.DataParallel(model).cuda()
 
     finetuning = args.peakedness_weight > 0
 
     if finetuning:
         rep_max, rep_min = eval_model(model, eval_dset)
+        optimize_maxima = rep_max > rep_min
+        logger.info(f"optimizing {'maxima' if optimize_maxima else 'minima'}")
+
         criterion = LossFunction(
-            optimize_maxima=rep_max > rep_min, peakedness_weight=args.peakedness_weight
+            optimize_maxima=optimize_maxima, peakedness_weight=args.peakedness_weight
         )
         model_p = "tuned.pth"
     else:
@@ -104,7 +108,6 @@ def main(args):
 
         torch.save(model.module.state_dict(), model_p)
 
-        logger.info("evaluating repeatability...")
         rep_max, rep_min = eval_model(model, eval_dset)
 
 
