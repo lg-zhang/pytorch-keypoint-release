@@ -1,1 +1,4 @@
-# pytorch-keypoint-draft
+```sh
+$ cd cppext
+$ sh compile.sh
+```
