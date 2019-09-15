@@ -1,0 +1,8 @@
+{
+	"files.associations": {
+		"*.m": "matlab",
+		"*.ino": "c",
+		"cstdio": "cpp",
+		"iostream": "cpp"
+	}
+}
